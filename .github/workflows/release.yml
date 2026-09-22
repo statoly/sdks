@@ -1,0 +1,132 @@
+name: Release
+
+# Publication is deliberately manual: one version number across all four SDKs,
+# cut when someone decides to, not on every merge.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, e.g. 1.0.0. Must already match the manifests on main.'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  # A mismatch here would publish four SDKs claiming to be the same release
+  # while carrying different code, so it is checked before anything is pushed.
+  verify-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Manifests agree with the requested version
+        run: |
+          want='${{ inputs.version }}'
+          fail=0
+
+          check() {
+            if [ "$2" != "$want" ]; then
+              echo "::error::$1 says $2, expected $want"
+              fail=1
+            fi
+          }
+
+          check typescript/package.json "$(jq -r .version typescript/package.json)"
+          check python/pyproject.toml "$(sed -n 's/^version = "\(.*\)"/\1/p' python/pyproject.toml | head -1)"
+          check dotnet/Statoly.Sdk.csproj "$(sed -n 's|.*<Version>\(.*\)</Version>.*|\1|p' dotnet/src/Statoly.Sdk/Statoly.Sdk.csproj | head -1)"
+
+          exit $fail
+
+  npm:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # trusted publishing
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+      # Trusted publishing needs npm 11.5.1 or later; the one bundled with the
+      # runner's Node is older.
+      - run: npm install -g npm@latest
+      - run: npm ci
+
+      # npm cannot attach a trusted publisher to a package that does not exist
+      # yet, so the first release authenticates with a token. Delete the
+      # NPM_TOKEN secret once @statoly/sdk is on the registry and the trusted
+      # publisher is configured on it; this step then stops running and the
+      # keyless one below takes over.
+      - name: Publish with a token (first release only)
+        if: ${{ secrets.NPM_TOKEN != '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Publish through trusted publishing
+        if: ${{ secrets.NPM_TOKEN == '' }}
+        run: npm publish --access public
+
+  pypi:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # trusted publishing
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install build
+      - run: python -m build
+        working-directory: python
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist
+
+  nuget:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # trusted publishing
+    defaults:
+      run:
+        working-directory: dotnet
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet pack src/Statoly.Sdk/Statoly.Sdk.csproj -c Release -o nupkg
+      - uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - run: dotnet nuget push 'nupkg/*.nupkg' --api-key '${{ steps.login.outputs.NUGET_API_KEY }}' --source https://api.nuget.org/v3/index.json
+
+  # Go has no registry: the module is served from this repository, and a module
+  # in a subdirectory is released by a tag carrying that subdirectory's name.
+  go:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Tag go/v${{ inputs.version }}
+        run: |
+          git tag 'go/v${{ inputs.version }}'
+          git push origin 'go/v${{ inputs.version }}'
