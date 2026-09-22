@@ -1,0 +1,43 @@
+{
+  "name": "@statoly/sdk",
+  "version": "1.0.0",
+  "description": "Official TypeScript client for the Statoly API",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/statoly/sdks.git",
+    "directory": "typescript"
+  },
+  "homepage": "https://statoly.ch",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@microsoft/kiota-abstractions": "1.0.0-preview.108",
+    "@microsoft/kiota-bundle": "1.0.0-preview.108"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "overrides": {
+    "@microsoft/kiota-abstractions": "1.0.0-preview.108"
+  }
+}

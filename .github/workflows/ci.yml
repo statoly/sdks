@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  generated-code-is-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+
+      # The generated clients are committed so consumers never run Kiota. That
+      # only holds if they match openapi.json: regenerate and diff.
+      - name: Install the pinned Kiota
+        run: dotnet tool install --global Microsoft.OpenApi.Kiota --version "$(cat .kiota-version)"
+
+      - name: Regenerate
+        run: ./scripts/generate.sh
+
+      - name: No drift
+        run: |
+          if ! git diff --exit-code --stat; then
+            echo "::error::the committed clients do not match openapi.json. Run ./scripts/generate.sh and commit the result."
+            exit 1
+          fi
+
+  typescript:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+  python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -e . pytest pytest-asyncio
+      - run: pytest
+
+  dotnet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dotnet
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet build src/Statoly.Sdk/Statoly.Sdk.csproj
+      - run: dotnet test tests/Statoly.Sdk.Tests/Statoly.Sdk.Tests.csproj
+
+  go:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.24'
+          cache-dependency-path: go/go.sum
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test ./...

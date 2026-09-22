@@ -1,0 +1,15 @@
+# Generated clients are committed; build output is not.
+node_modules/
+dist/
+*.tsbuildinfo
+
+__pycache__/
+*.egg-info/
+.venv/
+build/
+
+bin/
+obj/
+nupkg/
+
+.kiota.log

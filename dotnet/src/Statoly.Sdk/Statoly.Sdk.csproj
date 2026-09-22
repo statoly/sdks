@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Statoly.Sdk</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Statoly.Sdk</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Statoly</Authors>
+    <Description>Official .NET client for the Statoly API</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://statoly.ch</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/statoly/sdks</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Kiota.Bundle" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,346 @@
+{
+  "components": {
+    "schemas": {
+      "CreateCheckInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "description": "Optional message stored with the check",
+            "maxLength": 500,
+            "type": "string"
+          },
+          "status": {
+            "description": "Reported status: up (default) or down",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateCheckOutputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "receivedAt"
+        ],
+        "type": "object"
+      },
+      "FieldViolation": {
+        "additionalProperties": false,
+        "properties": {
+          "actual": {},
+          "constraint": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "constraint"
+        ],
+        "type": "object"
+      },
+      "Metadata": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "type": "object"
+      },
+      "Monitor": {
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "description": "Whether the owner has the monitor switched on",
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "Monitor identifier",
+            "format": "uuid",
+            "type": "string"
+          },
+          "metadata": {
+            "description": "User-defined key/value pairs",
+            "items": {
+              "$ref": "#/components/schemas/Metadata"
+            },
+            "type": "array"
+          },
+          "status": {
+            "description": "Result of the latest check, absent until the monitor has run",
+            "enum": [
+              "up",
+              "down",
+              "degraded"
+            ],
+            "type": "string"
+          },
+          "suspendedAt": {
+            "description": "Set while the billing sync holds the monitor because the organization has no entitlement. Independent of active, which stays the owner's own choice.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "title": {
+            "description": "Display name",
+            "type": "string"
+          },
+          "type": {
+            "description": "What the monitor checks",
+            "enum": [
+              "http",
+              "ping",
+              "story",
+              "certificate",
+              "heartbeat"
+            ],
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "type",
+          "active",
+          "metadata",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "RestError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "details": {},
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/FieldViolation"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "bearerFormat": "JWT",
+        "description": "Enter your Bearer token to access the endpoints.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "Uptime Pulse",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/monitors": {
+      "get": {
+        "operationId": "list-monitors",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Monitor"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestError"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "List monitors",
+        "tags": [
+          "Monitors"
+        ]
+      }
+    },
+    "/monitors/{id}": {
+      "get": {
+        "operationId": "get-monitor",
+        "parameters": [
+          {
+            "description": "Monitor ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Monitor ID",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Monitor"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestError"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Get a monitor",
+        "tags": [
+          "Monitors"
+        ]
+      }
+    },
+    "/monitors/{id}/checks": {
+      "get": {
+        "operationId": "list-checks",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestError"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        }
+      },
+      "post": {
+        "description": "Records a heartbeat ping. An empty body reports the monitor as up; pass status \"down\" to report an explicit failure. Only monitors of type heartbeat accept pushed checks.",
+        "operationId": "create-check",
+        "parameters": [
+          {
+            "description": "Monitor ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Monitor ID",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCheckInputBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCheckOutputBody"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestError"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Push a check for a heartbeat monitor",
+        "tags": [
+          "Checks"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
