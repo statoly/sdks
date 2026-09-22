@@ -4,16 +4,16 @@ build-backend = "hatchling.build"
 
 [project]
 name = "statoly"
-version = "1.0.0"
+version = "0.1.0"
 description = "Official Python client for the Statoly API"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
-authors = [{ name = "Statoly", email = "info@statoly.ch" }]
+authors = [{ name = "Statoly", email = "info@statoly.com" }]
 dependencies = ["microsoft-kiota-bundle>=1.9.0"]
 
 [project.urls]
-Homepage = "https://statoly.ch"
+Homepage = "https://statoly.com"
 Source = "https://github.com/statoly/sdks"
 
 [dependency-groups]

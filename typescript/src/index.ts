@@ -19,7 +19,7 @@ export * from './generated/models/index.js';
 export type { StatolyClient };
 
 /** Base URL of the production API. */
-export const DEFAULT_BASE_URL = 'https://api.statoly.ch/v1';
+export const DEFAULT_BASE_URL = 'https://api.statoly.com/v1';
 
 export interface StatolyOptions {
   /** Overrides the API the client talks to. Useful for staging. */

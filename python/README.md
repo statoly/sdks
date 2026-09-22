@@ -1,6 +1,6 @@
 # statoly
 
-Official Python client for the [Statoly](https://statoly.ch) API.
+Official Python client for the [Statoly](https://statoly.com) API.
 
 ```bash
 pip install statoly

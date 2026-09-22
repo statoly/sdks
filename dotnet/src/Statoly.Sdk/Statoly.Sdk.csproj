@@ -10,11 +10,11 @@
 
   <PropertyGroup>
     <PackageId>Statoly.Sdk</PackageId>
-    <Version>1.0.0</Version>
+    <Version>0.1.0</Version>
     <Authors>Statoly</Authors>
     <Description>Official .NET client for the Statoly API</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://statoly.ch</PackageProjectUrl>
+    <PackageProjectUrl>https://statoly.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/statoly/sdks</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

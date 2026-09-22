@@ -52,13 +52,28 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+          registry-url: https://registry.npmjs.org
           cache: npm
           cache-dependency-path: typescript/package-lock.json
       # Trusted publishing needs npm 11.5.1 or later; the one bundled with the
       # runner's Node is older.
       - run: npm install -g npm@latest
       - run: npm ci
-      - run: npm publish --access public
+
+      # npm cannot attach a trusted publisher to a package that does not exist
+      # yet, so the first release authenticates with a token. Delete the
+      # NPM_TOKEN secret once @statoly/sdk is on the registry and the trusted
+      # publisher is configured on it; this step then stops running and the
+      # keyless one below takes over.
+      - name: Publish with a token (first release only)
+        if: ${{ secrets.NPM_TOKEN != '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Publish through trusted publishing
+        if: ${{ secrets.NPM_TOKEN == '' }}
+        run: npm publish --access public
 
   pypi:
     needs: verify-version

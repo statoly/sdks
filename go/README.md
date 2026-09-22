@@ -1,6 +1,6 @@
 # statoly
 
-Official Go client for the [Statoly](https://statoly.ch) API.
+Official Go client for the [Statoly](https://statoly.com) API.
 
 ```bash
 go get github.com/statoly/sdks/go

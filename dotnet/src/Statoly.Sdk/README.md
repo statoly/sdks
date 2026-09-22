@@ -1,6 +1,6 @@
 # Statoly.Sdk
 
-Official .NET client for the [Statoly](https://statoly.ch) API.
+Official .NET client for the [Statoly](https://statoly.com) API.
 
 ```bash
 dotnet add package Statoly.Sdk

@@ -18,7 +18,7 @@ import (
 )
 
 // DefaultBaseURL is the production API.
-const DefaultBaseURL = "https://api.statoly.ch/v1"
+const DefaultBaseURL = "https://api.statoly.com/v1"
 
 // ErrMissingToken is returned by New when no organization token is given.
 var ErrMissingToken = errors.New("statoly: an organization token is required")

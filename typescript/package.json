@@ -1,6 +1,6 @@
 {
   "name": "@statoly/sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Official TypeScript client for the Statoly API",
   "license": "MIT",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "git+https://github.com/statoly/sdks.git",
     "directory": "typescript"
   },
-  "homepage": "https://statoly.ch",
+  "homepage": "https://statoly.com",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

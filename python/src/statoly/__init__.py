@@ -21,7 +21,7 @@ from kiota_bundle.default_request_adapter import DefaultRequestAdapter
 from .generated.statoly_client import StatolyClient
 
 #: Base URL of the production API.
-DEFAULT_BASE_URL = "https://api.statoly.ch/v1"
+DEFAULT_BASE_URL = "https://api.statoly.com/v1"
 
 __all__ = ["DEFAULT_BASE_URL", "Statoly", "StatolyClient"]
 

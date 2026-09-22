@@ -21,7 +21,7 @@ namespace Statoly.Sdk;
 public sealed class StatolyClient
 {
     /// <summary>Base URL of the production API.</summary>
-    public const string DefaultBaseUrl = "https://api.statoly.ch/v1";
+    public const string DefaultBaseUrl = "https://api.statoly.com/v1";
 
     /// <summary>The generated fluent API, for anything this wrapper does not surface.</summary>
     public StatolyApiClient Api { get; }

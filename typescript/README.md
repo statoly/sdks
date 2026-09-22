@@ -1,6 +1,6 @@
 # @statoly/sdk
 
-Official TypeScript client for the [Statoly](https://statoly.ch) API.
+Official TypeScript client for the [Statoly](https://statoly.com) API.
 
 ```bash
 npm install @statoly/sdk

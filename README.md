@@ -1,6 +1,6 @@
 # Statoly SDKs
 
-Official clients for the [Statoly](https://statoly.ch) API, in TypeScript, Python, C# and Go.
+Official clients for the [Statoly](https://statoly.com) API, in TypeScript, Python, C# and Go.
 
 | Language | Package | Install |
 |---|---|---|
@@ -9,7 +9,7 @@ Official clients for the [Statoly](https://statoly.ch) API, in TypeScript, Pytho
 | C# | [`Statoly.Sdk`](https://www.nuget.org/packages/Statoly.Sdk) | `dotnet add package Statoly.Sdk` |
 | Go | `github.com/statoly/sdks/go` | `go get github.com/statoly/sdks/go` |
 
-All four cover the REST API at `https://api.statoly.ch/v1` and authenticate with an
+All four cover the REST API at `https://api.statoly.com/v1` and authenticate with an
 organization token (`org_tok_…`) you create in the Statoly console.
 
 ## How this repository works
