@@ -47,6 +47,10 @@ jobs:
     defaults:
       run:
         working-directory: typescript
+    # A step's `if` cannot read `secrets`, only `env`, so the presence of the
+    # token is surfaced here for the two publish steps to branch on.
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -66,13 +70,13 @@ jobs:
       # publisher is configured on it; this step then stops running and the
       # keyless one below takes over.
       - name: Publish with a token (first release only)
-        if: ${{ secrets.NPM_TOKEN != '' }}
+        if: env.NPM_TOKEN != ''
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
 
       - name: Publish through trusted publishing
-        if: ${{ secrets.NPM_TOKEN == '' }}
+        if: env.NPM_TOKEN == ''
         run: npm publish --access public
 
   pypi:
