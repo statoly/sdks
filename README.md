@@ -43,6 +43,13 @@ then run the **Release** workflow with that version. It publishes to npm, PyPI
 and NuGet through trusted publishing — no API keys are stored — and tags
 `go/vX.Y.Z` for the Go module.
 
+A green run does not mean the npm package is live. Since September 2026 npm
+*stages* a publish: it runs a malware scan, and a maintainer then approves the
+version from the package's Versions tab on npmjs.com before anyone can install
+it. The approval button stays disabled while the scan runs, and approving asks
+for 2FA. PyPI, NuGet and Go publish immediately, so after a release the four
+are briefly out of step until someone approves npm.
+
 ## Licence
 
 MIT.
